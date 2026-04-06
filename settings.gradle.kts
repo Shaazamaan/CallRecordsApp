@@ -12,5 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
 rootProject.name = "CallRecordsApp"
-include ':app'
+include(":app")
