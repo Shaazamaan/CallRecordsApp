@@ -25,10 +25,9 @@ jobs:
 
       - name: Build with Gradle
         run: gradle assembleDebug
-        working-directory: ./CallRecordsApp
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: ./CallRecordsApp/app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
