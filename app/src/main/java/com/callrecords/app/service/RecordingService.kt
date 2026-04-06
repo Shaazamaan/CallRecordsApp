@@ -98,7 +98,9 @@ class RecordingService : LifecycleService() {
                 NotificationManager.IMPORTANCE_DEFAULT
             )
             val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(serviceChannel)
+            if (manager != null) {
+                manager.createNotificationChannel(serviceChannel)
+            }
         }
     }
 
