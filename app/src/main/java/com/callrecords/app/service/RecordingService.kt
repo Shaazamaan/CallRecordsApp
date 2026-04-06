@@ -6,9 +6,11 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import com.callrecords.app.R
 import com.callrecords.app.core.RecordingManager
@@ -33,9 +35,16 @@ class RecordingService : LifecycleService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
         when (intent?.action) {
             ACTION_START -> {
-                startForeground(NOTIFICATION_ID, createNotification())
+                val notification = createNotification()
+                ServiceCompat.startForeground(
+                    this,
+                    NOTIFICATION_ID,
+                    notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
+                )
                 startRecording()
             }
             ACTION_STOP -> {
@@ -44,7 +53,7 @@ class RecordingService : LifecycleService() {
                 stopSelf()
             }
         }
-        return super.onStartCommand(intent, flags, startId)
+        return START_NOT_STICKY
     }
 
     private fun startRecording() {
@@ -72,19 +81,12 @@ class RecordingService : LifecycleService() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Recording Call...")
             .setContentText("Tap to stop recording")
-            .setSmallIcon(R.drawable.ic_record) // To be created
+            .setSmallIcon(R.drawable.ic_record)
             .setOngoing(true)
             .setContentIntent(pendingIntent)
-            .addAction(R.drawable.ic_stop, "Stop", stopPendingIntent) // To be created
+            .addAction(R.drawable.ic_stop, "Stop", stopPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(Notification.CATEGORY_SERVICE)
-            .setForegroundServiceType(
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
-                } else {
-                    0
-                }
-            )
             .build()
     }
 
